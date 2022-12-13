@@ -19,6 +19,7 @@ FAudioDeviceModule::FAudioDeviceModule(webrtc::TaskQueueFactory* queue_factory) 
 rtc::scoped_refptr<FAudioDeviceModule>
 FAudioDeviceModule::Create(webrtc::TaskQueueFactory* queue_factory)
 {
+	UE_LOG(LogMillicastPlayer, Verbose, TEXT("%S"), __FUNCTION__);
 	rtc::scoped_refptr<FAudioDeviceModule>
 		AudioDeviceModule(new rtc::RefCountedObject<FAudioDeviceModule>(queue_factory));
 
@@ -33,6 +34,8 @@ int32 FAudioDeviceModule::ActiveAudioLayer(AudioLayer* audioLayer) const
 
 int32_t FAudioDeviceModule::RegisterAudioCallback(webrtc::AudioTransport* audio_callback)
 {
+	UE_LOG(LogMillicastPlayer, Verbose, TEXT("%S"), __FUNCTION__);
+
 	AudioCallback = audio_callback;
 	return 0;
 }
@@ -94,7 +97,7 @@ int32_t FAudioDeviceModule::InitRecording()
 
 int32_t FAudioDeviceModule::StartPlayout()
 {
-	UE_LOG(LogMillicastPlayer, Log, TEXT("Start Playout"));
+	UE_LOG(LogMillicastPlayer, Verbose, TEXT("%S"), __FUNCTION__);
 	{
 		FScopeLock cs(&CriticalSection);
 		bIsPlaying = true;
@@ -117,7 +120,7 @@ int32_t FAudioDeviceModule::StartPlayout()
 
 int32_t FAudioDeviceModule::StopPlayout()
 {
-	UE_LOG(LogMillicastPlayer, Log, TEXT("Stop Playout"));
+	UE_LOG(LogMillicastPlayer, Verbose, TEXT("%S"), __FUNCTION__);
 	bool start = false;
 	{
 		FScopeLock cs(&CriticalSection);
@@ -232,6 +235,7 @@ int32_t FAudioDeviceModule::PlayoutDelay(uint16_t* delay_ms) const
 
 void FAudioDeviceModule::SetAudioConsumer(TWeakInterfacePtr<IMillicastExternalAudioConsumer> Consumer)
 {
+	UE_LOG(LogMillicastPlayer, Verbose, TEXT("%S"), __FUNCTION__);
 	AudioConsumer = Consumer;
 }
 
