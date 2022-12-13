@@ -16,6 +16,7 @@ class TaskQueueFactory;
 }  // webrtc
 
 class FAudioDeviceModule;
+class FPlayerStatsCollector;
 
 /*
  * Small wrapper for the WebRTC peerconnection
@@ -53,13 +54,18 @@ class FWebRTCPeerConnection : public webrtc::PeerConnectionObserver
 
 	static TAtomic<int> RefCounter; // Number of Peerconnection factory created
 
+	TUniquePtr<FPlayerStatsCollector> RTCStatsCollector;
+
 public:
 	std::function<void(const std::string& mid, rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)> OnVideoTrack = nullptr;
 	std::function<void(const std::string& mid, rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)> OnAudioTrack = nullptr;
 
+	FString ServerId;
+	FString ClusterId;
+
 	webrtc::PeerConnectionInterface::RTCOfferAnswerOptions OaOptions;
 
-	FWebRTCPeerConnection() = default;
+	FWebRTCPeerConnection();
 	~FWebRTCPeerConnection() noexcept;
 	void Init(const FRTCConfig& Config, TWeakInterfacePtr<IMillicastExternalAudioConsumer> ExternalAudioConsumer);
 
@@ -92,6 +98,9 @@ public:
 	void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState new_state) override;
 	void OnIceCandidate(const webrtc::IceCandidateInterface* candidate) override;
 	void OnIceConnectionReceivingChange(bool receiving) override;
+
+	void EnableStats(bool Enable);
+	void PollStats();
 
 	webrtc::PeerConnectionInterface* operator->()
 	{

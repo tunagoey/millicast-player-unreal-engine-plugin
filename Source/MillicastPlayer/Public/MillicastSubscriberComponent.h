@@ -86,6 +86,7 @@ class MILLICASTPLAYER_API UMillicastSubscriberComponent : public UActorComponent
 
 private:
 	TMap <FString, TFunction<void(TSharedPtr<FJsonObject>)>> EventBroadcaster;
+	TMap <FString, TFunction<void(TSharedPtr<FJsonObject>)>> MessageParser;
 
 	/** The Millicast Media Source representing the configuration of the network source */
 	UPROPERTY(EditDefaultsOnly, Category = "Properties",
@@ -94,6 +95,10 @@ private:
 
 private:
 	void SendCommand(const FString& Name, TSharedPtr<FJsonObject> Data);
+
+	void ParseResponse(TSharedPtr<FJsonObject> JsonMsg);
+	void ParseError(TSharedPtr<FJsonObject> JsonMsg);
+	void ParseEvent(TSharedPtr<FJsonObject> JsonMsg);
 
 	void ParseActiveEvent(TSharedPtr<FJsonObject> JsonMsg);
 	void ParseInactiveEvent(TSharedPtr<FJsonObject> JsonMsg);
@@ -215,14 +220,15 @@ private:
 	FDelegateHandle OnClosedHandle;
 	FDelegateHandle OnMessageHandle;
 
+	/** Rtc objects */
 	FWebRTCPeerConnection* PeerConnection;
 	webrtc::PeerConnectionInterface::RTCConfiguration PeerConnectionConfig;
 
 	TWeakInterfacePtr<IMillicastExternalAudioConsumer> ExternalAudioConsumer;
 	FCriticalSection CriticalPcSection;
 
-	TAtomic<bool> Subscribed;
-
 	TArray<UMillicastAudioTrack*> AudioTracks;
 	TArray<UMillicastVideoTrack*> VideoTracks;
+
+	TAtomic<bool> Subscribed;
 };
